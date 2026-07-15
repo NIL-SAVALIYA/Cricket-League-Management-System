@@ -34,3 +34,22 @@ export async function createUser(data) {
     });
 
 }
+
+//new function added for first profile API 
+
+
+export async function findUserById(id) {
+
+    return prisma.user.findUnique({
+
+        where: {
+            id
+        },
+
+        include: {
+            role: true
+        }
+
+    });
+
+}
