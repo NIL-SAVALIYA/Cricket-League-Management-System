@@ -4,6 +4,8 @@ import authRoutes from "./routes/auth.routes.js";
 import roleRoutes from "./routes/role.routes.js";
 // new import needed for user.controller.js,user.routes.js,user.service.js....
 import userRoutes from "./routes/user.routes.js";
+//new import for team management CRUD
+import teamRoutes from "./routes/team.routes.js";
 
 const app = express();
 
@@ -21,5 +23,6 @@ app.get("/api/health", (req, res) => {
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/roles", roleRoutes);
 app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/teams", teamRoutes);
 
 export default app;

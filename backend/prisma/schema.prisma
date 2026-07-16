@@ -6,34 +6,52 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
 model Role {
-  id          String   @id @default(uuid())
-  name        String   @unique
+  id          String  @id @default(uuid())
+  name        String  @unique
   description String?
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  users       User[]
+  users User[]
 }
 
 model User {
-  id              String   @id @default(uuid())
+  id String @id @default(uuid())
 
-  firstName       String
-  lastName        String
+  firstName String
+  lastName  String
 
-  email           String   @unique
-  password        String
+  email    String @unique
+  password String
 
   phone           String?
   profileImageUrl String?
 
-  isActive        Boolean  @default(true)
+  isActive Boolean @default(true)
 
-  roleId          String
-  role            Role     @relation(fields: [roleId], references: [id])
+  roleId String
+  role   Role   @relation(fields: [roleId], references: [id])
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  teams Team[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Team {
+  id          String  @id @default(uuid())
+  name        String  @unique
+  shortName   String  @unique
+  logoUrl     String?
+  city        String
+  description String?
+
+  managerId String?
+  manager   User?   @relation(fields: [managerId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
