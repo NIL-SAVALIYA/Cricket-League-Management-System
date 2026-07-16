@@ -1,8 +1,9 @@
 import {registerSchema, loginSchema} from "../validators/auth.validator.js";
-import { registerUser, LoginUser, getProfile} from "../services/auth.service.js";
+import { registerUser, loginUser, getProfile} from "../services/auth.service.js";
 
 export async function register(req,res) {
 
+    console.log("LOGIN API HIT");    
 
     try {
 
@@ -41,7 +42,7 @@ export async function login(req,res) {
 
         const data = loginSchema.parse(req.body);
 
-        const result = await LoginUSer(data);
+        const result = await loginUser(data);
 
         return res.status(200).json( {
 

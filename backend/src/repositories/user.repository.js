@@ -1,16 +1,19 @@
 import prisma from "../config/db.js";
 
-export async function  findUserByEmail(email) {
+export async function findUserByEmail(email) {
 
-         return prisma.user.findUnique({
+    return prisma.user.findUnique({
 
-                where: {
+        where: {
+            email
+        },
 
-                    email
-                }
+        include: {
+            role: true
+        }
 
-         });
-         
+    });
+
 }
 
 export async function  findRoleByName(name) {
@@ -52,4 +55,32 @@ export async function findUserById(id) {
 
     });
 
+
+}
+
+//new section for role Management CRUD 
+
+export async function getAllUsers() {
+    return prisma.user.findMany({
+        include: {
+            role: true
+        }
+    });
+}
+
+export async function updateUser(id, data) {
+    return prisma.user.update({
+        where: {
+            id
+        },
+        data
+    });
+}
+
+export async function deleteUser(id) {
+    return prisma.user.delete({
+        where: {
+            id
+        }
+    });
 }

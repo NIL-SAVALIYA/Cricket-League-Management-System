@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import prisma from "../config/db.js";
 
 import {
 
@@ -71,7 +72,7 @@ export async function registerUser(userData) {
 import jwt from "jsonwebtoken";
 import env from "../config/env.js";
 
-export async function LoginUser(loginData) {
+export async function loginUser(loginData) {
 
             const{
                 email,
@@ -80,14 +81,8 @@ export async function LoginUser(loginData) {
 
             //find User 
             
-            const user= await findUserByEmail(email);
-
-            if(!user){
-
-                throw new Error("Invalid Email or Password.");
+            const user = await findUserByEmail(email);
             
-            }
-
             //compare password
 
             const isPasswordValid = await bcrypt.compare(password,user.password);
@@ -104,7 +99,7 @@ export async function LoginUser(loginData) {
                 {
 
                     userId: user.id,
-                    roleId: user.roleId
+                    role: user.role.name
                 },
                 env.JWT_SECRET,
                 {
@@ -123,7 +118,7 @@ export async function LoginUser(loginData) {
                     firstName: user.firstName,
                     lastName: user.lastName,
                     email: user.email,
-                    roleId: user.roleId
+                    role: user.role.name
 
                 }
             };

@@ -8,16 +8,19 @@ import {
     remove
 } from "../controllers/role.controller.js";
 
+import { authenticate } from "../middleware/auth.middleware.js";
+import { authorize } from "../middleware/authorize.middleware.js";
+
 const router = Router();
 
-router.post("/", create);
+router.post("/", authenticate, authorize("ADMIN"), create);
 
-router.get("/", getAll);
+router.get("/", authenticate, getAll);
 
-router.get("/:id", getOne);
+router.get("/:id", authenticate, getOne);
 
-router.put("/:id", update);
+router.put("/:id", authenticate, authorize("ADMIN"), update);
 
-router.delete("/:id", remove);
+router.delete("/:id", authenticate, authorize("ADMIN"), remove);
 
 export default router;
