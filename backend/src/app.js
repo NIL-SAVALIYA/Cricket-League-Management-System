@@ -1,7 +1,9 @@
 import express from "express";
 import authRoutes from "./routes/auth.routes.js";
-// new import nedded for role of user's....
+// new import needed for role of user's....
 import roleRoutes from "./routes/role.routes.js";
+// new import needed for user.controller.js,user.routes.js,user.service.js....
+import userRoutes from "./routes/user.routes.js";
 
 const app = express();
 
@@ -18,5 +20,6 @@ app.get("/api/health", (req, res) => {
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/roles", roleRoutes);
+app.use("/api/v1/users", userRoutes);
 
 export default app;

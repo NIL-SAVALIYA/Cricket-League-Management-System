@@ -40,7 +40,6 @@ export async function createUser(data) {
 
 //new function added for first profile API 
 
-
 export async function findUserById(id) {
 
     return prisma.user.findUnique({
@@ -49,21 +48,52 @@ export async function findUserById(id) {
             id
         },
 
-        include: {
-            role: true
+        select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+            phone: true,
+            profileImageUrl: true,
+            isActive: true,
+            createdAt: true,
+            updatedAt: true,
+            role: {
+                select: {
+                    id: true,
+                    name: true,
+                    description: true
+                }
+            }
         }
 
     });
 
-
 }
-
 //new section for role Management CRUD 
 
 export async function getAllUsers() {
     return prisma.user.findMany({
-        include: {
-            role: true
+        select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+            phone: true,
+            profileImageUrl: true,
+            isActive: true,
+            createdAt: true,
+            updatedAt: true,
+            role: {
+                select: {
+                    id: true,
+                    name: true,
+                    description: true
+                }
+            }
+        },
+        orderBy: {
+            createdAt: "asc"
         }
     });
 }
