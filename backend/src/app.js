@@ -6,6 +6,8 @@ import roleRoutes from "./routes/role.routes.js";
 import userRoutes from "./routes/user.routes.js";
 //new import for team management CRUD
 import teamRoutes from "./routes/team.routes.js";
+//other import for player management CRUD
+import playerRoutes from "./routes/player.routes.js";
 
 const app = express();
 
@@ -24,5 +26,6 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/roles", roleRoutes);
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/teams", teamRoutes);
+app.use("/api/v1/players", playerRoutes);
 
 export default app;

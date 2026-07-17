@@ -52,6 +52,55 @@ model Team {
   managerId String?
   manager   User?   @relation(fields: [managerId], references: [id])
 
+  players Player[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Player {
+  id             String   @id @default(uuid())
+
+  firstName      String
+  lastName       String
+
+  dateOfBirth    DateTime?
+
+  jerseyNumber   Int?
+
+  playerType     PlayerType
+
+  battingStyle   BattingStyle?
+
+  bowlingStyle   BowlingStyle?
+
+  isCaptain      Boolean @default(false)
+  isViceCaptain  Boolean @default(false)
+
+  teamId         String
+  team           Team     @relation(fields: [teamId], references: [id])
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+enum PlayerType {
+  BATSMAN
+  BOWLER
+  ALL_ROUNDER
+  WICKET_KEEPER
+}
+
+enum BattingStyle {
+  RIGHT_HAND
+  LEFT_HAND
+}
+
+enum BowlingStyle {
+  RIGHT_ARM_FAST
+  LEFT_ARM_FAST
+  RIGHT_ARM_MEDIUM
+  LEFT_ARM_MEDIUM
+  RIGHT_ARM_SPIN
+  LEFT_ARM_SPIN
 }
