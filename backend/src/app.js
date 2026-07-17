@@ -12,6 +12,8 @@ import playerRoutes from "./routes/player.routes.js";
 import matchRoutes  from  "./routes/match.routes.js";
 //other import for tournament management
 import tournamentRoutes from "./routes/tournament.routes.js";
+//add for tournament-team model
+import tournamentTeamRoutes from "./routes/tournament-team.routes.js";
 
 const app = express();
 
@@ -33,5 +35,6 @@ app.use("/api/v1/teams", teamRoutes);
 app.use("/api/v1/players", playerRoutes);
 app.use("/api/v1/matches", matchRoutes);
 app.use("/api/v1/tournaments", tournamentRoutes);
+app.use("/api/v1/tournament-teams", tournamentTeamRoutes);
 
 export default app;

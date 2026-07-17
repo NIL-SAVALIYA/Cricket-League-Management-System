@@ -8,38 +8,28 @@ datasource db {
 }
 
 model Role {
-  id          String  @id @default(uuid())
-  name        String  @unique
+  id          String   @id @default(uuid())
+  name        String   @unique
   description String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  users User[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  users       User[]
 }
 
 model User {
-  id String @id @default(uuid())
-
-  firstName String
-  lastName  String
-
-  email    String @unique
-  password String
-
+  id              String   @id @default(uuid())
+  firstName       String
+  lastName        String
+  email           String   @unique
+  password        String
   phone           String?
   profileImageUrl String?
-
-  isActive Boolean @default(true)
-
-  roleId String
-  role   Role   @relation(fields: [roleId], references: [id])
-
-  //team model..........
-  teams Team[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  isActive        Boolean  @default(true)
+  roleId          String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  teams           Team[]
+  role            Role     @relation(fields: [roleId], references: [id])
 }
 
 model Team {
@@ -49,49 +39,80 @@ model Team {
   logoUrl     String?
   city        String
   description String?
+  managerId   String?
 
-  managerId String?
-  manager   User?   @relation(fields: [managerId], references: [id])
+  tournaments TournamentTeam[]
 
-  //add for player model..........
-  players Player[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  matchesAsTeamA Match[]  @relation("TeamA")
+  matchesAsTeamB Match[]  @relation("TeamB")
+  tossWonMatches Match[]  @relation("TossWinner")
+  players        Player[]
+  manager        User?    @relation(fields: [managerId], references: [id])
+}
 
-  // add for  new match model.....
+model Player {
+  id            String        @id @default(uuid())
+  firstName     String
+  lastName      String
+  dateOfBirth   DateTime?
+  jerseyNumber  Int?
+  playerType    PlayerType
+  battingStyle  BattingStyle?
+  bowlingStyle  BowlingStyle?
+  isCaptain     Boolean       @default(false)
+  isViceCaptain Boolean       @default(false)
+  teamId        String
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  team          Team          @relation(fields: [teamId], references: [id])
+}
 
-  matchesAsTeamA Match[] @relation("TeamA")
+model Match {
+  id           String        @id @default(uuid())
+  teamAId      String
+  teamBId      String
+  venue        String
+  matchDate    DateTime
+  tossWinnerId String?
+  tossDecision TossDecision?
+  status       MatchStatus   @default(UPCOMING)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  teamA        Team          @relation("TeamA", fields: [teamAId], references: [id])
+  teamB        Team          @relation("TeamB", fields: [teamBId], references: [id])
+  tossWinner   Team?         @relation("TossWinner", fields: [tossWinnerId], references: [id])
+}
 
-  matchesAsTeamB Match[] @relation("TeamB")
+model Tournament {
+  id          String           @id @default(uuid())
+  name        String           @unique
+  description String?
+  format      TournamentFormat
+  startDate   DateTime
+  endDate     DateTime
+  status      TournamentStatus @default(UPCOMING)
 
-  tossWonMatches Match[] @relation("TossWinner")
+  registeredTeams TournamentTeam[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model Player {
+model TournamentTeam {
   id String @id @default(uuid())
 
-  firstName String
-  lastName  String
+  tournamentId String
+  teamId       String
 
-  dateOfBirth DateTime?
+  tournament Tournament @relation(fields: [tournamentId], references: [id])
 
-  jerseyNumber Int?
-
-  playerType PlayerType
-
-  battingStyle BattingStyle?
-
-  bowlingStyle BowlingStyle?
-
-  isCaptain     Boolean @default(false)
-  isViceCaptain Boolean @default(false)
-
-  teamId String
-  team   Team   @relation(fields: [teamId], references: [id])
+  team Team @relation(fields: [teamId], references: [id])
 
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+
+  @@unique([tournamentId, teamId])
 }
 
 enum PlayerType {
@@ -115,32 +136,6 @@ enum BowlingStyle {
   LEFT_ARM_SPIN
 }
 
-//new match model..........
-
-model Match {
-  id String @id @default(uuid())
-
-  teamAId String
-  teamA   Team   @relation("TeamA", fields: [teamAId], references: [id])
-
-  teamBId String
-  teamB   Team   @relation("TeamB", fields: [teamBId], references: [id])
-
-  venue String
-
-  matchDate DateTime
-
-  tossWinnerId String?
-  tossWinner   Team?   @relation("TossWinner", fields: [tossWinnerId], references: [id])
-
-  tossDecision TossDecision?
-
-  status MatchStatus @default(UPCOMING)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
 enum MatchStatus {
   UPCOMING
   LIVE
@@ -151,26 +146,6 @@ enum MatchStatus {
 enum TossDecision {
   BAT
   BOWL
-}
-
-model Tournament {
-  id String @id @default(uuid())
-
-  name String @unique
-
-  description String?
-
-  format TournamentFormat
-
-  startDate DateTime
-
-  endDate DateTime
-
-  status TournamentStatus @default(UPCOMING)
-
-  createdAt DateTime @default(now())
-
-  updatedAt DateTime @updatedAt
 }
 
 enum TournamentFormat {
