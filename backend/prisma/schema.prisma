@@ -54,34 +54,40 @@ model Team {
 
   players Player[]
 
+  matchesAsTeamA Match[] @relation("TeamA")
+
+  matchesAsTeamB Match[] @relation("TeamB")
+
+  tossWonMatches Match[] @relation("TossWinner")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Player {
-  id             String   @id @default(uuid())
+  id String @id @default(uuid())
 
-  firstName      String
-  lastName       String
+  firstName String
+  lastName  String
 
-  dateOfBirth    DateTime?
+  dateOfBirth DateTime?
 
-  jerseyNumber   Int?
+  jerseyNumber Int?
 
-  playerType     PlayerType
+  playerType PlayerType
 
-  battingStyle   BattingStyle?
+  battingStyle BattingStyle?
 
-  bowlingStyle   BowlingStyle?
+  bowlingStyle BowlingStyle?
 
-  isCaptain      Boolean @default(false)
-  isViceCaptain  Boolean @default(false)
+  isCaptain     Boolean @default(false)
+  isViceCaptain Boolean @default(false)
 
-  teamId         String
-  team           Team     @relation(fields: [teamId], references: [id])
+  teamId String
+  team   Team   @relation(fields: [teamId], references: [id])
 
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum PlayerType {
@@ -103,4 +109,42 @@ enum BowlingStyle {
   LEFT_ARM_MEDIUM
   RIGHT_ARM_SPIN
   LEFT_ARM_SPIN
+}
+
+//new match model..........
+
+model Match {
+  id String @id @default(uuid())
+
+  teamAId String
+  teamA   Team   @relation("TeamA", fields: [teamAId], references: [id])
+
+  teamBId String
+  teamB   Team   @relation("TeamB", fields: [teamBId], references: [id])
+
+  venue String
+
+  matchDate DateTime
+
+  tossWinnerId String?
+  tossWinner   Team?   @relation("TossWinner", fields: [tossWinnerId], references: [id])
+
+  tossDecision TossDecision?
+
+  status MatchStatus @default(UPCOMING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum MatchStatus {
+  UPCOMING
+  LIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum TossDecision {
+  BAT
+  BOWL
 }

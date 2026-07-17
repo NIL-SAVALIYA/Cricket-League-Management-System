@@ -8,6 +8,8 @@ import userRoutes from "./routes/user.routes.js";
 import teamRoutes from "./routes/team.routes.js";
 //other import for player management CRUD
 import playerRoutes from "./routes/player.routes.js";
+//other import for match management CRUD
+import matchRoutes  from  "./routes/match.routes.js";
 
 const app = express();
 
@@ -27,5 +29,6 @@ app.use("/api/v1/roles", roleRoutes);
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/teams", teamRoutes);
 app.use("/api/v1/players", playerRoutes);
+app.use("/api/v1/matches", matchRoutes);
 
 export default app;
