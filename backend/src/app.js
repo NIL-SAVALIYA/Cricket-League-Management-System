@@ -14,6 +14,15 @@ import matchRoutes  from  "./routes/match.routes.js";
 import tournamentRoutes from "./routes/tournament.routes.js";
 //add for tournament-team model
 import tournamentTeamRoutes from "./routes/tournament-team.routes.js";
+//add for fixture  of match in tournament
+import fixtureRoutes from "./routes/fixture.routes.js";
+//add for inning.routes.js
+import inningsRoutes from "./routes/innings.routes.js";
+//add for ball.routes.js
+import ballRoutes from "./routes/ball.routes.js";
+//add for inning.routes.js
+import liveScoreRoutes from "./routes/liveScore.routes.js";
+
 
 const app = express();
 
@@ -36,5 +45,9 @@ app.use("/api/v1/players", playerRoutes);
 app.use("/api/v1/matches", matchRoutes);
 app.use("/api/v1/tournaments", tournamentRoutes);
 app.use("/api/v1/tournament-teams", tournamentTeamRoutes);
+app.use("/api/v1/fixtures", fixtureRoutes);
+app.use("/api/v1/innings", inningsRoutes);
+app.use("/api/innings/:inningsId/balls", ballRoutes);
+app.use("/api/matches", liveScoreRoutes);
 
 export default app;

@@ -1,8 +1,8 @@
 import prisma from "../config/db.js";
 
-export async function findUserByEmail(email) {
+export async function findUserByEmail(email,db=prisma) {
 
-    return prisma.user.findUnique({
+    return db.user.findUnique({
 
         where: {
             email
@@ -16,9 +16,9 @@ export async function findUserByEmail(email) {
 
 }
 
-export async function  findRoleByName(name) {
+export async function  findRoleByName(name,db=prisma) {
 
-         return prisma.role.findUnique({
+         return db.role.findUnique({
 
                 where: {
 
@@ -30,9 +30,9 @@ export async function  findRoleByName(name) {
 }
 
 
-export async function createUser(data) {
+export async function createUser(data,db=prisma) {
 
-    return prisma.user.create({
+    return db.user.create({
         data    
     });
 
@@ -40,9 +40,9 @@ export async function createUser(data) {
 
 //new function added for first profile API 
 
-export async function findUserById(id) {
+export async function findUserById(id,db=prisma) {
 
-    return prisma.user.findUnique({
+    return db.user.findUnique({
 
         where: {
             id
@@ -72,8 +72,8 @@ export async function findUserById(id) {
 }
 //new section for role Management CRUD 
 
-export async function getAllUsers() {
-    return prisma.user.findMany({
+export async function getAllUsers(db=prisma) {
+    return db.user.findMany({
         select: {
             id: true,
             firstName: true,
@@ -98,8 +98,8 @@ export async function getAllUsers() {
     });
 }
 
-export async function updateUser(id, data) {
-    return prisma.user.update({
+export async function updateUser(id, data,db=prisma) {
+    return db.user.update({
         where: {
             id
         },
@@ -107,8 +107,8 @@ export async function updateUser(id, data) {
     });
 }
 
-export async function deleteUser(id) {
-    return prisma.user.delete({
+export async function deleteUser(id,db=prisma) {
+    return db.user.delete({
         where: {
             id
         }

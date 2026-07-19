@@ -52,3 +52,91 @@ export async function deleteMatch(id) {
         where: { id }
     });
 }
+
+//
+
+/*
+|--------------------------------------------------------------------------
+| Create Multiple Matches
+|--------------------------------------------------------------------------
+*/
+
+export async function createManyMatches(data) {
+
+    return prisma.match.createMany({
+
+        data
+
+    });
+
+}
+
+/*
+|--------------------------------------------------------------------------
+| Get Matches By Tournament
+|--------------------------------------------------------------------------
+*/
+
+export async function getMatchesByTournament(tournamentId) {
+
+    return prisma.match.findMany({
+
+        where: {
+            tournamentId
+        },
+
+        include: {
+
+            tournament: true,
+
+            teamA: {
+                select: {
+                    id: true,
+                    name: true,
+                    shortName: true
+                }
+            },
+
+            teamB: {
+                select: {
+                    id: true,
+                    name: true,
+                    shortName: true
+                }
+            },
+
+            tossWinner: {
+                select: {
+                    id: true,
+                    name: true,
+                    shortName: true
+                }
+            }
+
+        },
+
+        orderBy: {
+            matchDate: "asc"
+        }
+
+    });
+
+}
+
+/*
+|--------------------------------------------------------------------------
+| Count Matches By Tournament
+|--------------------------------------------------------------------------
+*/
+
+export async function countMatchesByTournament(tournamentId) {
+
+    return prisma.match.count({
+
+        where: {
+            tournamentId
+        }
+
+    });
+
+}
