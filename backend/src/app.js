@@ -22,6 +22,8 @@ import inningsRoutes from "./routes/innings.routes.js";
 import ballRoutes from "./routes/ball.routes.js";
 //add for inning.routes.js
 import liveScoreRoutes from "./routes/liveScore.routes.js";
+//add for pointsTable.routes.js
+import pointsTableRoutes from "./routes/pointsTable.routes.js";
 
 
 const app = express();
@@ -49,5 +51,6 @@ app.use("/api/v1/fixtures", fixtureRoutes);
 app.use("/api/v1/innings", inningsRoutes);
 app.use("/api/innings/:inningsId/balls", ballRoutes);
 app.use("/api/matches", liveScoreRoutes);
+app.use("/api/points-table", pointsTableRoutes);
 
 export default app;

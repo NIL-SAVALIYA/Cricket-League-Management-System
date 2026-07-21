@@ -272,13 +272,7 @@ export function buildBowlingSummary({
 
     return {
 
-        overs:
-
-            calculateOvers(
-
-                legalBalls
-
-            ),
+        overs: Math.floor(legalBalls / 6), 
 
         balls:
 

@@ -1,10 +1,12 @@
 import { Router } from "express";
 
 import { createBall } from "../controllers/ball.controller.js";
-import { authenticate } from "../middlewares/auth.middleware.js";
-import { authorize } from "../middlewares/authorize.middleware.js";
+import { authenticate } from "../middleware/auth.middleware.js";
+import { authorize } from "../middleware/authorize.middleware.js";
 
-const router = Router();
+const router = Router({
+    mergeParams: true
+});
 
 router.post(
     "/",

@@ -3,7 +3,7 @@
 | Cricket Constants
 |--------------------------------------------------------------------------
 */
-
+import { ExtraType } from "@prisma/client";
 export const BALLS_PER_OVER = 6;
 
 /*
@@ -249,7 +249,7 @@ export function buildBallData({
 
         totalRuns,
 
-        extraType,
+        extraType: extraType ?? ExtraType.NONE,
 
         isLegalDelivery: legal,
 

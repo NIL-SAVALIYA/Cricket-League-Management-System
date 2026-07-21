@@ -1,16 +1,26 @@
 import { z } from "zod";
+import { ExtraType } from "@prisma/client";
 
 export const createBallSchema = z.object({
-    inningsId: z.number().int().positive(),
-    batsmanId: z.number().int().positive(),
-    nonStrikerId: z.number().int().positive(),
-    bowlerId: z.number().int().positive(),
+
+    inningsId: z.string().uuid(),
+
+    batsmanId: z.string().uuid(),
+
+    nonStrikerId: z.string().uuid(),
+
+    bowlerId: z.string().uuid(),
+
 
     batRuns: z.number().int().min(0).max(6).default(0),
 
     extraRuns: z.number().int().min(0).max(7).default(0),
 
     extraType: z
+    .nativeEnum(ExtraType)
+    .default(ExtraType.NONE),
+
+    /*extraType: z
         .enum([
             "BYE",
             "LEG_BYE",
@@ -19,7 +29,7 @@ export const createBallSchema = z.object({
         ])
         .nullable()
         .default(null),
-
+    */
     isWicket: z.boolean().default(false),
 
     wicketType: z
@@ -38,20 +48,20 @@ export const createBallSchema = z.object({
         .nullable()
         .default(null),
 
-    dismissedPlayerId: z.number().int().positive().nullable().default(null),
+    dismissedPlayerId: z.string().uuid().nullable().default(null),
 
-    newBatsmanId: z.number().int().positive().nullable().default(null),
+    newBatsmanId: z.string().uuid().nullable().default(null),
 
-    fielderId: z.number().int().positive().nullable().default(null),
-
+    fielderId: z.string().uuid().nullable().default(null),
+    
     commentary: z.string().trim().max(500).default("")
 }).superRefine((data, ctx) => {
 
-    if (data.extraRuns > 0 && !data.extraType) {
+    if ( data.extraRuns > 0 && data.extraType === ExtraType.NONE) {
         ctx.addIssue({
             code: "custom",
             path: ["extraType"],
-            message: "extraType is required."
+            message: "extraType is required when extraRuns is greater than 0."
         });
     }
 

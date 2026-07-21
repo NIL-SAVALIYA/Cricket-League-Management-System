@@ -1,12 +1,21 @@
-import { createBallService } from "../services/ball.service.js";
+
 import { createBallSchema } from "../validators/ball.validator.js";
+import { createBallService } from "../services/ball.service.js";
+
 
 export async function createBall(req, res, next) {
     try {
+
+        console.log("========== BALL API ==========");
+        console.log("Params:", req.params);
+        console.log("Body:", req.body);
+
         const data = createBallSchema.parse({
             ...req.body,
-            inningsId: Number(req.params.inningsId)
+            inningsId: req.params.inningsId
         });
+
+        console.log("Validated:", data);
 
         const result = await createBallService(data);
 
@@ -17,6 +26,7 @@ export async function createBall(req, res, next) {
         });
 
     } catch (error) {
+        console.error(error);
         next(error);
     }
 }

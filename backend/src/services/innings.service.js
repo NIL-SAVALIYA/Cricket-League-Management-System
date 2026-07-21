@@ -15,6 +15,8 @@ import {
     getTeamById
 } from "../repositories/team.repository.js";
 
+import { initializeScorecards } from "./scorecardInitialization.service.js";
+
 /*
 |--------------------------------------------------------------------------
 | Create Innings
@@ -98,8 +100,15 @@ export async function createInningsService(inningsData) {
         );
     }
 
-    return await createInnings(inningsData);
+    const innings = await createInnings(inningsData);
 
+    console.log("✅ Innings Created:", innings.id);
+
+    await initializeScorecards(innings);
+
+    console.log("✅ Scorecards Initialized");
+
+    return innings;
 }
 
 /*

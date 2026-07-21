@@ -6,13 +6,17 @@
 |--------------------------------------------------------------------------
 */
 
-import prisma from "../config/prisma.js";
+import prisma from "../config/db.js";
 
 /* -------------------------------------------------------------------------- */
 /*                               Repositories                                 */
 /* -------------------------------------------------------------------------- */
 
-import { createBall } from "../repositories/ball.repository.js";
+import { createBall, 
+     updateBall,
+    getBallsByInnings,
+    getBallById
+} from "../repositories/ball.repository.js";
 
 import {
     getInningsById,
@@ -40,13 +44,16 @@ import {
     createFallOfWicket
 } from "../repositories/fallOfWicket.repository.js";
 
+import { ExtraType } from "@prisma/client";
+
+
 /* -------------------------------------------------------------------------- */
 /*                                 Engines                                    */
 /* -------------------------------------------------------------------------- */
 
 import { buildBallData } from "../engine/score.engine.js";
 import { buildExtrasSummary } from "../engine/extras.engine.js";
-import { buildOverSummary } from "../engine/over.engine.js";
+import { buildOverSummary,calculateCurrentOverRuns } from "../engine/over.engine.js";
 import { buildStrikeSummary } from "../engine/strike.engine.js";
 import { buildBattingSummary } from "../engine/batting.engine.js";
 import { buildBowlingSummary } from "../engine/bowling.engine.js";
@@ -54,6 +61,8 @@ import { buildPartnershipSummary } from "../engine/partnership.engine.js";
 import { buildInningsSummary } from "../engine/innings.engine.js";
 import { buildWicketSummary } from "../engine/wicket.engine.js";
 import { evaluateMatchResult } from "../engine/matchResult.engine.js";
+
+import { calculateOvers } from "../engine/bowling.engine.js";
 
 /* -------------------------------------------------------------------------- */
 /*                              Ball Service                                  */
@@ -76,7 +85,7 @@ export async function createBallService(data) {
 
             batRuns = 0,
             extraRuns = 0,
-            extraType = null,
+            extraType = ExtraType.NONE,
 
             isWicket = false,
             wicketType = null,
@@ -155,7 +164,7 @@ export async function createBallService(data) {
                     fours: 0,
                     sixes: 0,
 
-                    active: true
+                    isActive: true
 
                 }, tx);
 
@@ -194,7 +203,12 @@ export async function createBallService(data) {
 
             totalDeliveries: innings.totalBalls
 
-        });
+        }); 
+
+        console.log("BALL OBJECT");
+        console.dir(ball, { depth: null });
+
+        const savedBall = await createBall( ball,tx);
 
         /* ------------------------------------------------------------------ */
         /*                         Engine Calculations                        */
@@ -210,6 +224,20 @@ export async function createBallService(data) {
 
         });
 
+        const inningsBalls =
+        await getBallsByInnings(
+            innings.id,
+            tx
+        );
+        const currentOverRuns =
+            calculateCurrentOverRuns(
+                inningsBalls,
+                ball.over
+            );
+            console.log("currentOverRuns:", currentOverRuns);
+            console.log("legalBalls:", innings.legalBalls);
+            console.log("ball.over:", ball.over);
+
         const over = buildOverSummary({
 
             legalBalls:
@@ -219,7 +247,7 @@ export async function createBallService(data) {
             totalDeliveries:
                 innings.totalBalls + 1,
 
-            overRuns: ball.totalRuns
+            overRuns:  currentOverRuns
 
         });
 
@@ -254,13 +282,16 @@ export async function createBallService(data) {
 
                 isOut: ball.isWicket,
 
-                wicketType: ball.wicketType,
+                dismissalType: ball.wicketType,
 
-                dismissedBy: bowlerId,
+                bowlerId: bowlerId,
 
                 fielderId: ball.fielderId
 
             });
+        
+
+
 
         const bowlingSummary =
             buildBowlingSummary({
@@ -283,8 +314,14 @@ export async function createBallService(data) {
                     ),
 
                 maidens:
-                    bowling.maidens,
-
+                    bowling.maidens +
+                    (
+                    over.completed &&
+                    over.maiden
+                        ? 1
+                        : 0
+                    ),
+ 
                 wides:
                     bowling.wides +
                     (
@@ -322,7 +359,7 @@ export async function createBallService(data) {
                     partnership.sixes +
                     (ball.batRuns === 6 ? 1 : 0),
 
-                active: !ball.isWicket
+                isActive: !ball.isWicket
 
             });
 
@@ -392,12 +429,13 @@ export async function createBallService(data) {
                 sixes: battingSummary.sixes,
                 strikeRate: battingSummary.strikeRate,
                 isOut: battingSummary.isOut,
-                wicketType: battingSummary.wicketType,
-                dismissedBy: battingSummary.dismissedBy,
+                dismissalType: battingSummary.dismissalType,
+                bowlerId: battingSummary.bowlerId,
                 fielderId: battingSummary.fielderId
             },
             tx
         );
+
 
         await updateBowlingScorecard(
             bowling.id,
@@ -434,7 +472,7 @@ export async function createBallService(data) {
                 balls: partnershipSummary.balls,
                 fours: partnershipSummary.fours,
                 sixes: partnershipSummary.sixes,
-                active: partnershipSummary.active
+                isActive: partnershipSummary.isActive
             },
             tx
         );
@@ -475,7 +513,7 @@ export async function createBallService(data) {
                         balls: 0,
                         fours: 0,
                         sixes: 0,
-                        active: true
+                        isActive: true
                     },
                     tx
                 );
@@ -491,7 +529,7 @@ export async function createBallService(data) {
                         balls: 0,
                         fours: 0,
                         sixes: 0,
-                        active: true
+                        isActive: true
                     },
                     tx
                 );
@@ -500,19 +538,18 @@ export async function createBallService(data) {
 
         }
 
+        await evaluateMatchResult( innings.id,tx);
+
         /* ------------------------------------------------------------------ */
         /*                           Save Ball                                */
         /* ------------------------------------------------------------------ */
 
-        const savedBall = await createBall(
-            ball,
-            tx
-        );
+        
 
         /* ------------------------------------------------------------------ */
         /*                           Build Response                           */
         /* ------------------------------------------------------------------ */
-
+        const finalBall = await getBallById(savedBall.id, tx);
         return {
 
             message: "Ball recorded successfully.",
@@ -523,7 +560,13 @@ export async function createBallService(data) {
 
                 batting: battingSummary,
 
-                bowling: bowlingSummary,
+                bowling: {
+
+                    ...bowlingSummary,
+
+                    overs: calculateOvers(bowlingSummary.balls)
+
+                },
 
                 partnership: partnershipSummary,
 
@@ -537,7 +580,7 @@ export async function createBallService(data) {
 
             },
 
-            ball: savedBall
+            ball: finalBall
 
         };
 

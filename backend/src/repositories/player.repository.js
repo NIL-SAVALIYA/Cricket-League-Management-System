@@ -1,7 +1,7 @@
 import prisma from "../config/db.js";
 
-export async function createPlayer(data) {
-    return prisma.player.create({
+export async function createPlayer(data,db=prisma) {
+    return db.player.create({
         data,
         include: {
             team: true
@@ -9,16 +9,16 @@ export async function createPlayer(data) {
     });
 }
 
-export async function getAllPlayers() {
-    return prisma.player.findMany({
+export async function getAllPlayers(db=prisma) {
+    return db.player.findMany({
         include: {
             team: true
         }
     });
 }
 
-export async function getPlayerById(id) {
-    return prisma.player.findUnique({
+export async function getPlayerById(id,db=prisma) {
+    return db.player.findUnique({
         where: { id },
         include: {
             team: true
@@ -26,8 +26,8 @@ export async function getPlayerById(id) {
     });
 }
 
-export async function updatePlayer(id, data) {
-    return prisma.player.update({
+export async function updatePlayer(id, data,db=prisma) {
+    return db.player.update({
         where: { id },
         data,
         include: {
@@ -36,8 +36,24 @@ export async function updatePlayer(id, data) {
     });
 }
 
-export async function deletePlayer(id) {
-    return prisma.player.delete({
+export async function deletePlayer(id,db=prisma) {
+    return db.player.delete({
         where: { id }
     });
+}
+
+export async function getPlayersByTeam(teamId, db = prisma) {
+
+    return await db.player.findMany({
+
+        where: {
+            teamId
+        },
+
+        orderBy: {
+            jerseyNumber: "asc"
+        }
+
+    });
+
 }

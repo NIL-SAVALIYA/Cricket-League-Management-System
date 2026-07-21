@@ -6,9 +6,9 @@ import prisma from "../config/db.js";
 |--------------------------------------------------------------------------
 */
 
-export async function createInnings(data) {
+export async function createInnings(data, db = prisma) {
 
-    return prisma.innings.create({
+    return db.innings.create({
 
         data,
 
@@ -32,9 +32,9 @@ export async function createInnings(data) {
 |--------------------------------------------------------------------------
 */
 
-export async function getAllInnings() {
+export async function getAllInnings( db = prisma) {
 
-    return prisma.innings.findMany({
+    return db.innings.findMany({
 
         include: {
 
@@ -62,9 +62,9 @@ export async function getAllInnings() {
 |--------------------------------------------------------------------------
 */
 
-export async function getInningsById(id) {
+export async function getInningsById(id, db = prisma) {
 
-    return prisma.innings.findUnique({
+    return db.innings.findUnique({
 
         where: {
 
@@ -92,9 +92,9 @@ export async function getInningsById(id) {
 |--------------------------------------------------------------------------
 */
 
-export async function updateInnings(id, data) {
+export async function updateInnings(id, data, db = prisma) {
 
-    return prisma.innings.update({
+    return db.innings.update({
 
         where: {
 
@@ -124,9 +124,9 @@ export async function updateInnings(id, data) {
 |--------------------------------------------------------------------------
 */
 
-export async function deleteInnings(id) {
+export async function deleteInnings(id, db = prisma) {
 
-    return prisma.innings.delete({
+    return db.innings.delete({
 
         where: {
 
@@ -144,9 +144,9 @@ export async function deleteInnings(id) {
 |--------------------------------------------------------------------------
 */
 
-export async function getInningsByMatch(matchId) {
+export async function getInningsByMatch(matchId, db = prisma) {
 
-    return prisma.innings.findMany({
+    return db.innings.findMany({
 
         where: {
 

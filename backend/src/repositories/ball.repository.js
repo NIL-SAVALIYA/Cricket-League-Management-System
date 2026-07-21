@@ -1,4 +1,4 @@
-import prisma from "../config/prisma.js";
+import prisma from "../config/db.js";
 
 /*
 |--------------------------------------------------------------------------
@@ -6,37 +6,87 @@ import prisma from "../config/prisma.js";
 |--------------------------------------------------------------------------
 */
 
-export async function createBall(data) {
+// temporilly
+export async function createBall(data, db = prisma) {
 
-    return await prisma.ball.create({
+    return await db.ball.create({
 
-        data,
+        data: {
+
+            innings: {
+                connect: {
+                    id: data.inningsId
+                }
+            },
+
+            batsman: {
+                connect: {
+                    id: data.batsmanId
+                }
+            },
+
+            nonStriker: {
+                connect: {
+                    id: data.nonStrikerId
+                }
+            },
+
+            bowler: {
+                connect: {
+                    id: data.bowlerId
+                }
+            },
+
+            dismissedPlayer: data.dismissedPlayerId
+                ? {
+                    connect: {
+                        id: data.dismissedPlayerId
+                    }
+                }
+                : undefined,
+
+            fielder: data.fielderId
+                ? {
+                    connect: {
+                        id: data.fielderId
+                    }
+                }
+                : undefined,
+
+            deliveryNumber: data.deliveryNumber,
+            over: data.over,
+            ball: data.ball,
+            batRuns: data.batRuns,
+            extraRuns: data.extraRuns,
+            totalRuns: data.totalRuns,
+            extraType: data.extraType,
+            isLegalDelivery: data.isLegalDelivery,
+            isBoundaryFour: data.isBoundaryFour,
+            isBoundarySix: data.isBoundarySix,
+            isWicket: data.isWicket,
+            wicketType: data.wicketType,
+            commentary: data.commentary
+        },
 
         include: {
-
+            innings: true,
             batsman: true,
-
             nonStriker: true,
-
-            bowler: true,
-
-            innings: true
-
+            bowler: true
         }
 
     });
 
 }
-
 /*
 |--------------------------------------------------------------------------
 | Get All Balls
 |--------------------------------------------------------------------------
 */
 
-export async function getAllBalls() {
+export async function getAllBalls(db=prisma) {
 
-    return await prisma.ball.findMany({
+    return await db.ball.findMany({
 
         orderBy: [
 
@@ -70,9 +120,9 @@ export async function getAllBalls() {
 |--------------------------------------------------------------------------
 */
 
-export async function getBallById(id) {
+export async function getBallById(id,db=prisma) {
 
-    return await prisma.ball.findUnique({
+    return await db.ball.findUnique({
 
         where: {
 
@@ -106,9 +156,9 @@ export async function getBallById(id) {
 |--------------------------------------------------------------------------
 */
 
-export async function getBallsByInnings(inningsId) {
+export async function getBallsByInnings(inningsId,db=prisma) {
 
-    return await prisma.ball.findMany({
+    return await db.ball.findMany({
 
         where: {
 
@@ -142,16 +192,34 @@ export async function getBallsByInnings(inningsId) {
 
 }
 
+export async function getRecentBalls(inningsId, limit = 6, db = prisma) {
+    return await db.ball.findMany({
+        where: {
+            inningsId
+        },
+        orderBy: {
+            deliveryNumber: "desc"
+        },
+        take: limit,
+        include: {
+            batsman: true,
+            nonStriker: true,
+            bowler: true,
+            dismissedPlayer: true,
+            fielder: true
+        }
+    });
+}
+
 /*
 |--------------------------------------------------------------------------
 | Get Last Ball
 |--------------------------------------------------------------------------
 */
 
-export async function getLastBall(inningsId) {
+export async function getLastBall(inningsId,db = prisma) {
 
-    return await prisma.ball.findFirst({
-
+    return await db.ball.findFirst({
         where: {
 
             inningsId
@@ -174,9 +242,9 @@ export async function getLastBall(inningsId) {
 |--------------------------------------------------------------------------
 */
 
-export async function updateBall(id, data) {
+export async function updateBall(id, data,db=prisma) {
 
-    return await prisma.ball.update({
+    return await db.ball.update({
 
         where: {
 
@@ -206,9 +274,9 @@ export async function updateBall(id, data) {
 |--------------------------------------------------------------------------
 */
 
-export async function deleteBall(id) {
+export async function deleteBall(id,db=prisma) {
 
-    return await prisma.ball.delete({
+    return await db.ball.delete({
 
         where: {
 
@@ -226,9 +294,9 @@ export async function deleteBall(id) {
 |--------------------------------------------------------------------------
 */
 
-export async function countLegalDeliveries(inningsId) {
+export async function countLegalDeliveries(inningsId,db=prisma) {
 
-    return await prisma.ball.count({
+    return await db.ball.count({
 
         where: {
 
@@ -248,9 +316,9 @@ export async function countLegalDeliveries(inningsId) {
 |--------------------------------------------------------------------------
 */
 
-export async function countDeliveries(inningsId) {
+export async function countDeliveries(inningsId,db=prisma) {
 
-    return await prisma.ball.count({
+    return await db.ball.count({
 
         where: {
 

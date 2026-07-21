@@ -1,4 +1,4 @@
-import prisma from "../config/prisma.js";
+import prisma from "../config/db.js";
 
 const battingScorecardInclude = {
 
@@ -134,4 +134,18 @@ export async function existsBattingScorecard(inningsId, playerId, db = prisma) {
     return false;
    }  !!scorecard this function use instead of this if and else function*/
 
+}
+
+export async function getCurrentBatsmen(inningsId, db = prisma) {
+    return await db.battingScorecard.findMany({
+        where: {
+            inningsId,
+            isOut: false
+        },
+        include: battingScorecardInclude,
+        orderBy: {
+            battingPosition: "asc"
+        },
+        take: 2
+    });
 }

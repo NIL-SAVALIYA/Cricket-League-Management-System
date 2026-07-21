@@ -188,9 +188,9 @@ export function buildBattingSummary({
 
     isOut,
 
-    wicketType,
+    dismissalType,
 
-    dismissedBy,
+    bowlerId,
 
     fielderId
 
@@ -199,31 +199,22 @@ export function buildBattingSummary({
     return {
 
         runs,
-
         balls,
-
         fours,
-
         sixes,
 
-        strikeRate:
-
-            calculateStrikeRate({
-
-                runs,
-
-                balls
-
-            }),
+        strikeRate: calculateStrikeRate({
+            runs,
+            balls
+        }),
 
         isOut,
 
-        wicketType,
+        dismissalType,
 
-        dismissedBy,
+        bowlerId ,
 
         fielderId
 
     };
-
 }

@@ -161,7 +161,7 @@ export function buildPartnershipSummary({
 
     sixes,
 
-    active
+    isActive
 
 }) {
 
@@ -187,7 +187,7 @@ export function buildPartnershipSummary({
 
             }),
 
-        active
+        isActive
 
     };
 
